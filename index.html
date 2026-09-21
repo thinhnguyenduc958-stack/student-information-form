@@ -1,18 +1,610 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nhập thông tin sinh viên</title>
-    <meta name="description" content="Biểu mẫu nhập và quản lý thông tin đăng ký sinh viên" />
-    <meta property="og:title" content="Nhập thông tin sinh viên" />
-    <meta property="og:description" content="Biểu mẫu nhập và quản lý thông tin đăng ký sinh viên" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thông tin sinh viên</title>
+  <meta name="description" content="Website biểu mẫu thông tin sinh viên với giao diện trang đăng nhập hiện đại" />
+  <meta property="og:title" content="Thông tin sinh viên" />
+  <meta property="og:description" content="Website biểu mẫu thông tin sinh viên với giao diện trang đăng nhập hiện đại" />
+  <meta property="og:type" content="website" />
 
+  <style>
+    /* Reset & CSS Variables */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --border-focus: #2563eb;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-active: #1e40af;
+      --error-color: #ef4444;
+      --error-bg: #fef2f2;
+      --success-color: #10b981;
+      --success-bg: #ecfdf5;
+      --radius-card: 16px;
+      --radius-input: 10px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --shadow-input-focus: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 16px;
+      line-height: 1.5;
+    }
+
+    /* Form Container / Card */
+    .login-wrapper {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 36px 32px;
+      transition: all 0.25s ease;
+    }
+
+    @media (max-width: 480px) {
+      .login-wrapper {
+        padding: 28px 20px;
+      }
+    }
+
+    /* Brand / Icon Header */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-icon {
+      width: 52px;
+      height: 52px;
+      background: #eff6ff;
+      color: var(--primary-color);
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      border: 1px solid #dbeafe;
+    }
+
+    .brand-icon svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    h1.form-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    p.form-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Alert Banner */
+    .alert-banner {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-input);
+      font-size: 13.5px;
+      margin-bottom: 20px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-banner.error {
+      display: flex;
+      background-color: var(--error-bg);
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .alert-banner svg {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 7px;
+    }
+
+    label .req {
+      color: var(--error-color);
+      margin-left: 2px;
+    }
+
+    .input-control,
+    .select-control {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text-main);
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-input);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .input-control::placeholder {
+      color: #94a3b8;
+    }
+
+    .input-control:focus,
+    .select-control:focus {
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-input-focus);
+    }
+
+    .input-control.has-error,
+    .select-control.has-error {
+      border-color: var(--error-color);
+      background-color: #fffafb;
+    }
+
+    /* Custom select wrapper for arrow icon */
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: "";
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 6px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    .select-control {
+      cursor: pointer;
+      padding-right: 36px;
+    }
+
+    .field-error-text {
+      display: none;
+      font-size: 12px;
+      color: var(--error-color);
+      margin-top: 5px;
+    }
+
+    .field-error-text.show {
+      display: block;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      height: 48px;
+      margin-top: 8px;
+      background-color: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-input);
+      font-size: 15.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--primary-hover);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-submit:active {
+      background-color: var(--primary-active);
+      transform: scale(0.99);
+    }
+
+    /* Success Result Card */
+    .success-card {
+      display: none;
+      text-align: left;
+    }
+
+    .success-card.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--success-bg);
+      color: var(--success-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px auto;
+    }
+
+    .success-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .success-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .info-summary-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 24px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 14px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .info-row:first-child {
+      padding-top: 0;
+    }
+
+    .info-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .info-value {
+      color: var(--text-main);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      height: 46px;
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-input);
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    /* Footer Note */
+    .form-footer-note {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12.5px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-wrapper" id="login-container">
+    
+    <!-- State 1: Input Form -->
+    <div id="form-view">
+      <!-- Header -->
+      <div class="brand-header">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+          </svg>
+        </div>
+        <h1 class="form-title" id="main-heading">Thông tin sinh viên</h1>
+        <p class="form-subtitle">Vui lòng nhập đầy đủ thông tin để gửi đăng ký</p>
+      </div>
+
+      <!-- Alert Banner -->
+      <div class="alert-banner" id="global-alert" role="alert">
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <span id="alert-text">Vui lòng kiểm tra lại thông tin.</span>
+      </div>
+
+      <!-- Form -->
+      <form id="student-form" novalidate>
+        <!-- Field 1: Họ và tên -->
+        <div class="form-group">
+          <label for="fullname">Họ và tên <span class="req">*</span></label>
+          <input 
+            type="text" 
+            id="fullname" 
+            name="fullname" 
+            class="input-control" 
+            placeholder="Nhập họ và tên"
+            autocomplete="name"
+            required 
+          />
+          <div class="field-error-text" id="fullname-error">Vui lòng nhập họ và tên hợp lệ.</div>
+        </div>
+
+        <!-- Field 2: Năm sinh -->
+        <div class="form-group">
+          <label for="birthyear">Năm sinh <span class="req">*</span></label>
+          <input 
+            type="number" 
+            id="birthyear" 
+            name="birthyear" 
+            class="input-control" 
+            placeholder="Nhập năm sinh"
+            min="1900"
+            max="2026"
+            required 
+          />
+          <div class="field-error-text" id="birthyear-error">Vui lòng nhập năm sinh hợp lệ (1900 - 2026).</div>
+        </div>
+
+        <!-- Field 3: Ngành đăng ký -->
+        <div class="form-group">
+          <label for="major">Ngành đăng ký <span class="req">*</span></label>
+          <div class="select-wrapper">
+            <select id="major" name="major" class="select-control" required>
+              <option value="">-- Chọn ngành đăng ký --</option>
+              <option value="Công nghệ thông tin">Công nghệ thông tin</option>
+              <option value="Trí tuệ nhân tạo">Trí tuệ nhân tạo</option>
+              <option value="Kỹ thuật phần mềm">Kỹ thuật phần mềm</option>
+              <option value="An toàn thông tin">An toàn thông tin</option>
+              <option value="Điện tử - Viễn thông">Điện tử - Viễn thông</option>
+            </select>
+          </div>
+          <div class="field-error-text" id="major-error">Vui lòng chọn ngành đăng ký.</div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="btn-submit" class="btn-submit">
+          <span>Gửi thông tin</span>
+        </button>
+      </form>
+
+      <div class="form-footer-note">
+        Hệ thống tiếp nhận hồ sơ tuyển sinh trực tuyến
+      </div>
+    </div>
+
+    <!-- State 2: Success Confirmation Card -->
+    <div id="success-view" class="success-card">
+      <div class="success-icon-wrap" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2 class="success-title">Gửi thông tin thành công!</h2>
+      <p class="success-subtitle">Hồ sơ sinh viên đã được ghi nhận vào hệ thống</p>
+
+      <div class="info-summary-box">
+        <div class="info-row">
+          <span class="info-label">Họ và tên</span>
+          <span class="info-value" id="res-fullname">--</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Năm sinh</span>
+          <span class="info-value" id="res-birthyear">--</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tuổi</span>
+          <span class="info-value" id="res-age">--</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Ngành đăng ký</span>
+          <span class="info-value" id="res-major" style="color: var(--primary-color);">--</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Thời gian gửi</span>
+          <span class="info-value" id="res-time">--</span>
+        </div>
+      </div>
+
+      <button type="button" id="btn-reset" class="btn-secondary">
+        Nhập thông tin mới
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById('student-form');
+      const fullnameInput = document.getElementById('fullname');
+      const birthyearInput = document.getElementById('birthyear');
+      const majorSelect = document.getElementById('major');
+      
+      const fullnameError = document.getElementById('fullname-error');
+      const birthyearError = document.getElementById('birthyear-error');
+      const majorError = document.getElementById('major-error');
+      
+      const globalAlert = document.getElementById('global-alert');
+      const alertText = document.getElementById('alert-text');
+      
+      const formView = document.getElementById('form-view');
+      const successView = document.getElementById('success-view');
+      const btnReset = document.getElementById('btn-reset');
+
+      // Clear input error on typing
+      function setupClearOnInput(inputElem, errorElem) {
+        inputElem.addEventListener('input', function () {
+          inputElem.classList.remove('has-error');
+          errorElem.classList.remove('show');
+          if (globalAlert.classList.contains('error')) {
+            globalAlert.classList.remove('error');
+          }
+        });
+      }
+
+      setupClearOnInput(fullnameInput, fullnameError);
+      setupClearOnInput(birthyearInput, birthyearError);
+      majorSelect.addEventListener('change', function () {
+        majorSelect.classList.remove('has-error');
+        majorError.classList.remove('show');
+        if (globalAlert.classList.contains('error')) {
+          globalAlert.classList.remove('error');
+        }
+      });
+
+      // Validate and handle submit
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        
+        let isValid = true;
+        let firstInvalidInput = null;
+
+        // Reset previous errors
+        [fullnameInput, birthyearInput, majorSelect].forEach(function(el) {
+          el.classList.remove('has-error');
+        });
+        [fullnameError, birthyearError, majorError].forEach(function(el) {
+          el.classList.remove('show');
+        });
+        globalAlert.classList.remove('error');
+
+        // 1. Check Họ và tên
+        const fullnameVal = fullnameInput.value.trim();
+        if (!fullnameVal || fullnameVal.length < 2) {
+          isValid = false;
+          fullnameInput.classList.add('has-error');
+          fullnameError.textContent = 'Vui lòng nhập họ và tên (ít nhất 2 ký tự).';
+          fullnameError.classList.add('show');
+          if (!firstInvalidInput) firstInvalidInput = fullnameInput;
+        }
+
+        // 2. Check Năm sinh
+        const currentYear = new Date().getFullYear();
+        const birthYearNum = parseInt(birthyearInput.value, 10);
+        if (!birthyearInput.value || isNaN(birthYearNum) || birthYearNum < 1900 || birthYearNum > currentYear) {
+          isValid = false;
+          birthyearInput.classList.add('has-error');
+          birthyearError.textContent = 'Năm sinh không hợp lệ (từ năm 1900 đến ' + currentYear + ').';
+          birthyearError.classList.add('show');
+          if (!firstInvalidInput) firstInvalidInput = birthyearInput;
+        }
+
+        // 3. Check Ngành đăng ký
+        const majorVal = majorSelect.value;
+        if (!majorVal) {
+          isValid = false;
+          majorSelect.classList.add('has-error');
+          majorError.textContent = 'Vui lòng chọn ngành đăng ký.';
+          majorError.classList.add('show');
+          if (!firstInvalidInput) firstInvalidInput = majorSelect;
+        }
+
+        if (!isValid) {
+          alertText.textContent = 'Vui lòng kiểm tra và điền đầy đủ các thông tin bắt buộc.';
+          globalAlert.classList.add('error');
+          if (firstInvalidInput) {
+            firstInvalidInput.focus();
+          }
+          return;
+        }
+
+        // Calculation
+        const age = currentYear - birthYearNum;
+        const now = new Date();
+        const formattedTime = 
+          String(now.getHours()).padStart(2, '0') + ':' + 
+          String(now.getMinutes()).padStart(2, '0') + ' - ' + 
+          String(now.getDate()).padStart(2, '0') + '/' + 
+          String(now.getMonth() + 1).padStart(2, '0') + '/' + 
+          now.getFullYear();
+
+        // Populate Success Card
+        document.getElementById('res-fullname').textContent = fullnameVal;
+        document.getElementById('res-birthyear').textContent = birthYearNum;
+        document.getElementById('res-age').textContent = age + ' tuổi';
+        document.getElementById('res-major').textContent = majorVal;
+        document.getElementById('res-time').textContent = formattedTime;
+
+        // Transition to Success View
+        formView.style.display = 'none';
+        successView.classList.add('active');
+      });
+
+      // Reset button
+      btnReset.addEventListener('click', function () {
+        form.reset();
+        successView.classList.remove('active');
+        formView.style.display = 'block';
+        fullnameInput.focus();
+      });
+
+    })();
+  </script>
+</body>
+</html>

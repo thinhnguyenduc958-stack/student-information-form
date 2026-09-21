@@ -21,3 +21,22 @@ export const MAJORS: MajorOption[] = [
   { value: 'attt', label: 'An toàn thông tin', code: 'ATTT' },
   { value: 'dpt', label: 'Điện tử - Viễn thông', code: 'ĐTVT' },
 ];
+
+export interface AIStudentRequest {
+  fullName: string;
+  birthYear: number | '';
+  major: string;
+  studyGoal: string;
+  currentSkills: string;
+  aiRequest: string;
+}
+
+export interface AIAdvisoryResult {
+  content: string;
+  modelUsed: string;
+  isMockFallback?: boolean;
+  timestamp: string;
+  studentName: string;
+  majorName: string;
+}
+
