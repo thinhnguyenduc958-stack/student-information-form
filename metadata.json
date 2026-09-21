@@ -1,0 +1,6 @@
+{
+  "name": "Nhập thông tin sinh viên",
+  "description": "Biểu mẫu nhập và quản lý thông tin đăng ký sinh viên",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
